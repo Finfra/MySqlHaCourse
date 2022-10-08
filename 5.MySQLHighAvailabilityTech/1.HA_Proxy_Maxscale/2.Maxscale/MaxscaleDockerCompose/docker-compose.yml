@@ -18,7 +18,10 @@ services:
     volumes:
       - "./share/:/share"
       - share-nodes:/share-nodes
-    command: mysqld --server-id=1 --log-bin=mysql-bin-1.log
+    command: ["mysqld",
+      "--server-id=1",
+      "--log-bin='mysql-bin-1.log'"
+    ]
     # entrypoint: bash /share/master.sh
   slave:
     image: mysql:5.7
@@ -44,6 +47,28 @@ services:
     command: ["mysqld",
       "--server-id=2"
     ]
+  maxscale:
+    image: mariadb/maxscale:latest
+    container_name: maxscale
+    depends_on:
+      - slave
+    ports:
+      - "8989:8989"
+      - "33060:3306"
+    restart: always
+    networks:
+      net1:
+        ipv4_address: 10.0.0.9
+    healthcheck:
+      test: "curl -u admin:mariadb http://localhost:8989/v1/maxscale"
+      interval: 2s
+      retries: 20
+    volumes:
+      - "./share/:/share"
+      - share-nodes:/share-nodes
+    entrypoint: bash /share/maxscale.sh
+
+
   manager:
     image: mysql:5.7
     container_name: manager

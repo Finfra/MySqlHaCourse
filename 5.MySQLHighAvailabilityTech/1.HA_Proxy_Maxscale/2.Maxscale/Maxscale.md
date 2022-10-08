@@ -51,7 +51,7 @@ docker exec -it master  mysql -uroot -pmypass -e "
     GRANT SHOW DATABASES ON *.* TO 'maxscale'@'%';
     GRANT REPLICATION CLIENT,REPLICATION SLAVE,SUPER,RELOAD on *.* to 'maxscale'@'%';
     flush privileges;
-"    
+"
 ```
 
 
@@ -81,28 +81,35 @@ type=server
 address=172.18.0.3
 port=3306
 protocol=MariaDBBackend
+
+[maxscale]
+admin_secure_gui=false
+threads=1
+admin_host=0.0.0.0
+
+[MariaDB-Monitor]
+replication_password=1
+replication_user=maxscale
+module=mariadbmon
+password=1
+servers=server1,server2
+type=monitor
+user=maxscale
+
+[Splitter-Service]
+password=1
+router=readwritesplit
+type=service
+user=maxscale
+targets=server1,server2
+
+[Splitter-Listener]
+port=3306
+service=Splitter-Service
+type=listener
 " >  /etc/maxscale.cnf
 
-# [MariaDB-Monitor]
-# type=monitor
-# module=mariadbmon
-# servers=server1,server2
-# user=maxscale
-# passwd=1
-# monitor_interval=2000
 
-# [Splitter-Service]
-# type=service
-# router=readwritesplit
-# servers=server1,server2
-# user=maxscale
-# password=1
-# 
-# [Splitter-Listener]
-# type=listener
-# service=Splitter-Service
-# protocol=MariaDBProtocol
-# port=3306 
 ```
 # Maxscale 재시작
 ```
@@ -117,7 +124,7 @@ docker exec -it master bash
 
 # Mini Workshop
 * slave3를 추가해 보세요. (20분)
-``` 
+```
 docker rm -f slave2
 
 docker run -d --rm --name=slave2 --net=replicanet --hostname=slave2 \
