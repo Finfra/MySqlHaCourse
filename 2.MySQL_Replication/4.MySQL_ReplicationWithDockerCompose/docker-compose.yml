@@ -1,0 +1,74 @@
+---
+services:
+  master:
+    image: mysql:5.7
+    container_name: master
+    ports:
+      - "33061:3306"
+    restart: always
+    networks:
+      net1:
+        ipv4_address: 10.0.0.10
+    environment:
+      MYSQL_ROOT_PASSWORD: mypass
+    healthcheck:
+      test: "mysqladmin ping -u root -p$${MYSQL_ROOT_PASSWORD}"
+      interval: 2s
+      retries: 20
+    volumes:
+      - "./share/:/share"
+      - share-nodes:/share-nodes
+    command: ["mysqld",
+      "--server-id=1",
+      "--log-bin='mysql-bin-1.log'"
+    ]
+    # entrypoint: bash /share/master.sh
+  slave:
+    image: mysql:5.7
+    container_name: slave
+    depends_on:
+      - master
+    ports:
+      - "33062:3306"
+    restart: always
+    networks:
+      net1:
+        ipv4_address: 10.0.0.11
+    environment:
+      MYSQL_ROOT_PASSWORD: mypass
+
+    healthcheck:
+      test: "mysqladmin ping -u root -p$${MYSQL_ROOT_PASSWORD}"
+      interval: 2s
+      retries: 20
+    volumes:
+      - "./share/:/share"
+      - share-nodes:/share-nodes
+    command: ["mysqld",
+      "--server-id=2"
+    ]
+  manager:
+    image: mysql:5.7
+    container_name: manager
+    depends_on:
+      - slave
+    networks:
+      net1:
+        ipv4_address: 10.0.0.2
+    volumes:
+      - "./share/:/share"
+      - share-nodes:/share-nodes
+    entrypoint: bash /share/manager.sh
+
+
+networks:
+  net1:
+    driver: bridge
+    name: replnet
+    ipam:
+      config:
+        - subnet: 10.0.0.0/16
+          gateway: 10.0.0.1
+volumes:
+  share-nodes:
+    name: nodesvol
