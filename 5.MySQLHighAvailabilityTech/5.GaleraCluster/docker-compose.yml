@@ -1,0 +1,45 @@
+services:
+  node1:
+      image: hauptmedia/mariadb:10.1
+      hostname: node1
+      ports:
+        - 13306:3306
+      environment:
+        - MYSQL_ROOT_PASSWORD=test
+        - REPLICATION_PASSWORD=test
+        - MYSQL_DATABASE=maria
+        - MYSQL_USER=maria
+        - MYSQL_PASSWORD=test
+        - GALERA=On
+        - NODE_NAME=node1
+        - CLUSTER_NAME=maria_cluster
+        - CLUSTER_ADDRESS=gcomm://
+      command: --wsrep-new-cluster
+
+  node2:
+      image: hauptmedia/mariadb:10.1
+      hostname: node2
+      links:
+        - node1
+      ports:
+        - 23306:3306
+      environment:
+        - REPLICATION_PASSWORD=test
+        - GALERA=On
+        - NODE_NAME=node2
+        - CLUSTER_NAME=maria_cluster
+        - CLUSTER_ADDRESS=gcomm://node1
+
+  node3:
+      image: hauptmedia/mariadb:10.1
+      hostname: node3
+      links:
+        - node1
+      ports:
+        - 33306:3306
+      environment:
+        - REPLICATION_PASSWORD=test
+        - GALERA=On
+        - NODE_NAME=node3
+        - CLUSTER_NAME=maria_cluster
+        - CLUSTER_ADDRESS=gcomm://node1
