@@ -38,21 +38,11 @@ $ docker network ls
 
 Run the commands below in a terminal.
 ```
-docker run -d --rm --name=master --net=replicanet --hostname=master \
- -e MYSQL_ROOT_PASSWORD=mypass \
-  mysql:5.7 \
-  --server-id=1 \
-  --log-bin='mysql-bin-1.log'
+docker run -d --rm --name=master --net=replicanet --hostname=master  -e MYSQL_ROOT_PASSWORD=mypass   mysql:5.7   --server-id=1   --log-bin='mysql-bin-1.log'
 
-docker run -d --rm --name=slave1 --net=replicanet --hostname=slave1 \
-   -e MYSQL_ROOT_PASSWORD=mypass \
-  mysql:5.7 \
-  --server-id=2
+docker run -d --rm --name=slave1 --net=replicanet --hostname=slave1  -e MYSQL_ROOT_PASSWORD=mypass   mysql:5.7   --server-id=2
 
-docker run -d --rm --name=slave2 --net=replicanet --hostname=slave2 \
- -e MYSQL_ROOT_PASSWORD=mypass \
-  mysql:5.7 \
-  --server-id=3
+docker run -d --rm --name=slave2 --net=replicanet --hostname=slave2  -e MYSQL_ROOT_PASSWORD=mypass   mysql:5.7   --server-id=3
 ```
 It's possible to see whether the containers are started by running:
 ```
@@ -70,6 +60,21 @@ CONTAINER ID        IMAGE                    COMMAND                  CREATED   
 b2b855652b3b        mysql/mysql-server:5.7   "/entrypoint.sh --se…"   30 seconds ago      Up 30 seconds (healthy)   3306/tcp, 33060/tcp   slave2
 8a10c0c92350        mysql/mysql-server:5.7   "/entrypoint.sh --se…"   34 seconds ago      Up 32 seconds (healthy)   3306/tcp, 33060/tcp   slave1
 8f8ceffd4580        mysql/mysql-server:5.7   "/entrypoint.sh --se…"   34 seconds ago      Up 34 seconds (healthy)   3306/tcp, 33060/tcp   master
+```
+
+
+```
+PS> docker network inspect replicanet|findstr Name
+        "Name": "replicanet",
+                "Name": "slave1",
+                "Name": "slave2",
+                "Name": "master",
+```                
+```
+PS> docker network inspect replicanet|findstr IPv4
+                "IPv4Address": "172.18.0.3/16",
+                "IPv4Address": "172.18.0.4/16",
+                "IPv4Address": "172.18.0.2/16",
 ```
 
 Now we’re ready start our instances and configure replication.
@@ -177,9 +182,7 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 Run the code below to check whether the database was replicated.
 ```
 for N in 1 2
-  do docker exec -it slave$N mysql -uroot -pmypass \
-  -e "SHOW VARIABLES WHERE Variable_name = 'hostname';" \
-  -e "SHOW DATABASES;"
+  do docker exec -it slave$N mysql -uroot -pmypass   -e "SHOW VARIABLES WHERE Variable_name = 'hostname';"   -e "SHOW DATABASES;"
 done
 ```
 Output:
