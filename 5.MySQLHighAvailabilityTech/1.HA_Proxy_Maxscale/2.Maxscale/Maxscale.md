@@ -18,6 +18,7 @@ docker run -d --rm --name=slave --net=replicanet --hostname=slave \
   mysql:5.7 \
   --server-id=2
 
+sleep 10
 
 # Configure Master
   docker exec -it master mysql -uroot -pmypass \
@@ -34,7 +35,9 @@ docker exec -it slave mysql -uroot -pmypass -e "START SLAVE;"
 
 # Test
 docker exec -it slave mysql -uroot -pmypass -e "SHOW SLAVE STATUS\G"
+
 docker exec -it master mysql -uroot -pmypass -e "CREATE DATABASE TEST; SHOW DATABASES;"
+
 docker exec -it slave mysql -uroot -pmypass  -e "SHOW DATABASES;"
 ```
 
@@ -47,7 +50,6 @@ docker exec -it master  mysql -uroot -pmypass -e "
     GRANT SELECT ON mysql.tables_priv TO 'maxscale'@'%';
     GRANT SELECT ON mysql.columns_priv TO 'maxscale'@'%';
     GRANT SELECT ON mysql.proxies_priv TO 'maxscale'@'%';
-    GRANT SELECT ON mysql.roles_mapping TO 'maxscale'@'%';
     GRANT SHOW DATABASES ON *.* TO 'maxscale'@'%';
     GRANT REPLICATION CLIENT,REPLICATION SLAVE,SUPER,RELOAD on *.* to 'maxscale'@'%';
     flush privileges;
@@ -82,11 +84,6 @@ address=172.18.0.3
 port=3306
 protocol=MariaDBBackend
 
-[maxscale]
-admin_secure_gui=false
-threads=1
-admin_host=0.0.0.0
-
 [MariaDB-Monitor]
 replication_password=1
 replication_user=maxscale
@@ -113,8 +110,7 @@ type=listener
 ```
 # Maxscale 재시작
 ```
-docker exec -it mxs  bash
-  maxscale-restart
+docker exec -it mxs   maxscale-restart
 ```
 # Test
 ```
