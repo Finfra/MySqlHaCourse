@@ -43,8 +43,8 @@ docker exec -it slave mysql -uroot -pmypass  -e "SHOW DATABASES;"
 ```
 docker network inspect replicanet
   # IPv4Address키 확인
-docker exec -it master  ls yum install -y net-tools
-docker exec -it master ifconfig|grep inet
+  # docker exec -it master yum install -y net-tools
+  # docker exec -it master ifconfig|grep inet
 ```
 
 # 접속 테스트
@@ -55,8 +55,8 @@ docker exec -it slave mysql -h 172.18.0.2 -u root -pmypass --port 3306 -e "SHOW 
 # HaProxy Container 생성, 설정 및 구동
 ```
 docker rm -f haproxy
-docker run -it --name haproxy -p 20000:20000 --net=replicanet centos:centos7 /bin/bash
-  yum -y install haproxy
+docker run -it --name haproxy -p 20000:20000 --net=replicanet centos:centos7 
+  docker exec -it haproxy yum -y install haproxy
 ```
 * HaProxy.cfg 파일 수정
 ```
@@ -69,14 +69,14 @@ vi /etc/haproxy/haproxy.cfg
   #    mode tcp
   #    balance roundrobin
   #    #option mysql-check user haproxy
-  #    server  node1 172.xx.0.2:3306 weight 2 check
-  #    server  node2 172.xx.0.3:3306 weight 1 check
- haproxy -f /etc/haproxy/haproxy.cfg -db -V
+  #    server  node1 master:3306 weight 2 check
+  #    server  node2 slave:3306 weight 1 check
+haproxy -f /etc/haproxy/haproxy.cfg -db -V
 ```
 
 # HaProxy 작동 확인
 ```
-docker exec -it slave mysql -h 172.18.0.4 -u root -pmypass --port 20000 -e "show variables like 'server_id';"
+docker exec -it slave mysql -h haproxy -u root -pmypass --port 20000 -e "show variables like 'server_id';"
 ```
 
 # HaProxy 연습
@@ -96,10 +96,10 @@ docker run -it --name haproxy2 -p 20080:20080 --net=replicanet centos:centos7 /b
     #    mode tcp
     #    balance roundrobin
     #    #option mysql-check user haproxy
-    #    server  node1 172.18.0.5:80 weight 2 check
-    #    server  node2 172.18.0.6:80 weight 1 check
+    #    server  node1 n1:80 weight 2 check
+    #    server  node2 n2:80 weight 1 check
    haproxy -f /etc/haproxy/haproxy.cfg -db -V
-docker exec -it n1 bash
+docker exec -it n1 
   echo 1 > /usr/share/nginx/html/index.html
 docker exec -it n1 bash
   echo 2 > /usr/share/nginx/html/index.html
@@ -108,7 +108,11 @@ docker exec -it n1 bash
 ```
 127.0.0.1:20080
 ```
-# cf) vi 못쓰시는 분 복붙하세요.
+
+
+
+
+# cf) vi 못쓰시는 분들은 복붙하세요.
 echo "
 #---------------------------------------------------------------------
 # Example configuration for a possible web application.  See the
