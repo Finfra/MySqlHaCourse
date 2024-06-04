@@ -10,13 +10,13 @@ docker rm -f slave3
     mysql:5.7 \
     --server-id=4
 
-
+sleep 20
 
 # Configure Slave
 docker exec -it slave3 mysql -uroot -pmypass  -e "CHANGE MASTER TO MASTER_HOST='master', MASTER_USER='repl',       MASTER_PASSWORD='slavepass', MASTER_LOG_FILE='mysql-bin-1.000003';"
 docker exec -it slave3 mysql -uroot -pmypass -e "START SLAVE;"
 
-
+sleep 5
 # Test
 docker exec -it slave3 mysql -uroot -pmypass -e "SHOW SLAVE STATUS\G"
 
