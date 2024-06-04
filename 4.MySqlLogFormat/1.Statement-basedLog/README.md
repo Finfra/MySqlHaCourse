@@ -1,26 +1,13 @@
 # Statement-based binlog 실습
 ```
 docker rm -f mysql
-rm -rf $PWD/d0
-mkdir -rf $PWD/d0
-docker run                           \
-    -d                               \
-    --rm                             \
-    --name mysql                     \
-    --net=replicanet                 \
-    --hostname=mysql                \
-    -p 8081:8080                     \
-    -v $PWD/d0:/var/lib/mysql        \
-    -e MYSQL_ROOT_PASSWORD=mypass    \
-    mysql:5.7                            \
-    --server-id=1                    \
-    --log-bin='mysql-bin-1.log' \
-    --binlog_format='STATEMENT'
+docker network create replicanet
+rm -rf ${HOME}/d0
+mkdir ${HOME}/d0
+docker run -d --rm --name mysql --net=replicanet --hostname=mysql -p 8081:8080 -v ${HOME}/d0:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=mypass mysql:5.7 --server-id=1 --log-bin='mysql-bin-1.log' --binlog_format='STATEMENT'
 
 # 10초 기다리세요.
-docker exec -it mysql \
-    mysql -uroot -pmypass \
-    -e "show variables like '%binlog_format%';"
+docker exec -it mysql /usr/bin/mysql -uroot -pmypass  -e "show variables like '%binlog_format%';"
 ```
 
 # 로그 포멧 위치 확인
