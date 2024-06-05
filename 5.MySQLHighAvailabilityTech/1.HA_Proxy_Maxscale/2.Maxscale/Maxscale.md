@@ -63,7 +63,7 @@ docker rm -f mxs
 docker run -d -p 8989:8989 -p3306:3306 --name mxs --net=replicanet mariadb/maxscale:latest
 curl -u admin:mariadb http://localhost:8989/v1/maxscale
 ```
-* maxscale.cfg 파일 수정
+* maxscale.cfg 파일 수정 : address는 hostname임.
 ```
 docker exec -it mxs  bash
 echo "
