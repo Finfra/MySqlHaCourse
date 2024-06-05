@@ -99,7 +99,7 @@ docker run -it --name haproxy2 -p 20080:20080 --net=replicanet centos:centos7 /b
         server  node1 n1:80 weight 2 check
         server  node2 n2:80 weight 1 check
    haproxy -f /etc/haproxy/haproxy.cfg -db -V
-docker exec -it n1 
+docker exec -it n1 bash
   echo 1 > /usr/share/nginx/html/index.html
 docker exec -it n2 bash
   echo 2 > /usr/share/nginx/html/index.html
