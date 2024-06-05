@@ -74,13 +74,13 @@ admin_host=0.0.0.0
 
 [server1]
 type=server
-address=172.18.0.2
+address=master
 port=3306
 protocol=MariaDBBackend
 
 [server2]
 type=server
-address=172.18.0.3
+address=slave
 port=3306
 protocol=MariaDBBackend
 
