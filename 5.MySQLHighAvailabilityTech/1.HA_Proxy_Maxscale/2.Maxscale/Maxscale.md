@@ -115,7 +115,7 @@ docker exec -it mxs   maxscale-restart
 # Test
 ```
 docker exec -it master bash
-  mysql -umaxscale -p1 -P3306 -h172.18.0.4  -e "use mysql;show tables;"
+  mysql -umaxscale -p1 -P3306 -hmsx  -e "use mysql;show tables;"
 ```
 
 # Mini Workshop
@@ -140,7 +140,7 @@ docker exec -it mxs  bash
 echo "
 [server3]
 type=server
-address=172.18.0.5
+address=slave2
 port=3306
 protocol=MariaDBBackend">>  /etc/maxscale.cnf
 maxscale-restart
