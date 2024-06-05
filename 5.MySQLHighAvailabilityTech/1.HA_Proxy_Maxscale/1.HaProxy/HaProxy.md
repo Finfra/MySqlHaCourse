@@ -62,15 +62,15 @@ docker run -it --name haproxy -p 20000:20000 --net=replicanet centos:centos7
 ```
 vi /etc/haproxy/haproxy.cfg
   # 수정할
-  # mode tcp
-  # option tcplog
+       mode tcp
+      option tcplog
   # 추가할
-  #  listen mysql_cluster 0.0.0.0:20000
-  #    mode tcp
-  #    balance roundrobin
-  #    #option mysql-check user haproxy
-  #    server  node1 master:3306 weight 2 check
-  #    server  node2 slave:3306 weight 1 check
+  listen mysql_cluster 0.0.0.0:20000
+       mode tcp
+       balance roundrobin
+       #option mysql-check user haproxy
+       server  node1 master:3306 weight 2 check
+       server  node2 slave:3306 weight 1 check
 haproxy -f /etc/haproxy/haproxy.cfg -db -V
 ```
 
@@ -91,7 +91,7 @@ docker run -it --name haproxy2 -p 20080:20080 --net=replicanet centos:centos7 /b
     # 수정할
         mode tcp
         option tcplog
-    추가할
+    # 추가할
     listen mysql_cluster 0.0.0.0:20080
         mode tcp
         balance roundrobin
