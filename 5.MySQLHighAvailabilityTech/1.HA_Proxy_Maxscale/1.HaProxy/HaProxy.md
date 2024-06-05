@@ -101,7 +101,7 @@ docker run -it --name haproxy2 -p 20080:20080 --net=replicanet centos:centos7 /b
    haproxy -f /etc/haproxy/haproxy.cfg -db -V
 docker exec -it n1 
   echo 1 > /usr/share/nginx/html/index.html
-docker exec -it n1 bash
+docker exec -it n2 bash
   echo 2 > /usr/share/nginx/html/index.html
 
 # 브라우저 :
