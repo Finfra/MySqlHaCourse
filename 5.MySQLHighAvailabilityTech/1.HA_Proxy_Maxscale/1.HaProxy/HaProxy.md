@@ -56,7 +56,7 @@ docker exec -it slave mysql -h 172.18.0.2 -u root -pmypass --port 3306 -e "SHOW 
 ```
 docker rm -f haproxy
 docker run -it --name haproxy -p 20000:20000 --net=replicanet centos:centos7 
-  docker exec -it haproxy yum -y install haproxy
+    yum -y install haproxy
 ```
 * HaProxy.cfg 파일 수정
 ```
